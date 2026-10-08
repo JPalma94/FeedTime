@@ -15,8 +15,24 @@
       <header class="topbar">
         <div class="brand-mark" aria-hidden="true">
           <svg viewBox="0 0 48 48" focusable="false">
-            <circle cx="24" cy="24" r="16" fill="#fff8f4" />
-            <circle cx="24" cy="24" r="4" fill="#f2aaa2" />
+            <defs>
+              <radialGradient id="brand-skin" cx="17" cy="15" r="31" gradientUnits="userSpaceOnUse">
+                <stop stop-color="#fffdf9" />
+                <stop offset=".72" stop-color="#fff4ea" />
+                <stop offset="1" stop-color="#f7d9d0" />
+              </radialGradient>
+              <radialGradient id="brand-areola" cx="21" cy="20" r="9" gradientUnits="userSpaceOnUse">
+                <stop stop-color="#f7c2b9" />
+                <stop offset="1" stop-color="#e99591" />
+              </linearGradient>
+            </defs>
+            <circle cx="24" cy="24" r="19" fill="#d96f71" opacity=".22" />
+            <circle cx="24" cy="23" r="18" fill="url(#brand-skin)" />
+            <circle cx="24" cy="23" r="8.3" fill="url(#brand-areola)" />
+            <circle cx="24" cy="23" r="3.1" fill="#dc8583" />
+            <ellipse cx="22.8" cy="21.9" rx="1.15" ry=".7" fill="#fff8f4" opacity=".9" />
+            <path d="M11.8 20.5c.9-5.6 5.3-10 10.8-11" fill="none" stroke="#fff" stroke-linecap="round" stroke-opacity=".8" stroke-width="1.3" />
+            <path d="M29.5 36.2c2.5-1 4.5-2.8 5.8-5.1" fill="none" stroke="#e8b8ae" stroke-linecap="round" stroke-opacity=".75" stroke-width="1.2" />
           </svg>
         </div>
         <div>
@@ -45,6 +61,14 @@
             <span class="button-copy">Right breast</span>
             <span class="button-status">Tap to start</span>
           </button>
+        </div>
+
+        <div class="last-feed-card" aria-label="Time since last feed">
+          <span class="last-feed-icon" aria-hidden="true">◷</span>
+          <div>
+            <p class="last-feed-label">Since the last feed</p>
+            <p class="last-feed-time" id="last-feed-time" aria-live="polite">Waiting for feeding log…</p>
+          </div>
         </div>
 
         <div class="hint" aria-hidden="true">
@@ -81,6 +105,7 @@
             <p>Your feeding entries will appear here.</p>
           </div>
         </div>
+        <button class="load-older-button" id="load-older" type="button" hidden>Load older entries</button>
       </section>
     </main>
 

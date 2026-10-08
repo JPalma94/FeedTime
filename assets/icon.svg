@@ -1,5 +1,21 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <defs>
+    <radialGradient id="skin" cx="176" cy="152" r="395" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#fffdf9"/>
+      <stop offset=".72" stop-color="#fff4ea"/>
+      <stop offset="1" stop-color="#f7d9d0"/>
+    </radialGradient>
+    <radialGradient id="areola" cx="224" cy="211" r="98" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#f7c2b9"/>
+      <stop offset="1" stop-color="#e99591"/>
+    </radialGradient>
+  </defs>
   <rect width="512" height="512" rx="116" fill="#f6a7a0"/>
-  <circle cx="256" cy="256" r="170" fill="#fff8f4"/>
-  <circle cx="256" cy="256" r="43" fill="#f2aaa2"/>
+  <circle cx="256" cy="264" r="203" fill="#d96f71" opacity=".22"/>
+  <circle cx="256" cy="248" r="192" fill="url(#skin)"/>
+  <circle cx="256" cy="248" r="89" fill="url(#areola)"/>
+  <circle cx="256" cy="248" r="34" fill="#dc8583"/>
+  <ellipse cx="244" cy="236" rx="13" ry="8" fill="#fff8f4" opacity=".9"/>
+  <path d="M125 221c10-60 57-107 116-118" fill="none" stroke="#fff" stroke-linecap="round" stroke-opacity=".8" stroke-width="14"/>
+  <path d="M315 389c27-11 49-30 63-55" fill="none" stroke="#e8b8ae" stroke-linecap="round" stroke-opacity=".75" stroke-width="13"/>
 </svg>

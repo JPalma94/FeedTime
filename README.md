@@ -12,6 +12,8 @@ To enable the app:
 2. In Firestore **Rules**, publish the rules from `firestore.rules`.
 3. Enable GitHub Pages for the repository and open the published site.
 
+The log loads the newest 50 entries first; use **Load older entries** to fetch more. The last-feed timer uses already loaded entries, so if the most recent completed feed is older than the visible entries, load older entries to find it.
+
 **Important:** These rules intentionally allow anyone on the internet to read, add, change, or delete the app's Firestore data. A private or unlisted GitHub Pages URL does not restrict database access. Do not store sensitive information in this database. For private data, add Firebase Authentication and restrict the rules to signed-in users.
 
 ## Run locally

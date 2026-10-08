@@ -4,12 +4,16 @@ import {
   collection,
   doc,
   deleteDoc,
+  getDocs,
   initializeFirestore,
+  limit,
   onSnapshot,
+  orderBy,
   persistentLocalCache,
   persistentMultipleTabManager,
   query,
   runTransaction,
+  startAfter,
 } from 'https://www.gstatic.com/firebasejs/12.13.0/firebase-firestore.js';
 
 const firebaseConfig = {
@@ -34,7 +38,11 @@ export {
   db,
   deleteDoc,
   doc,
+  getDocs,
+  limit,
   onSnapshot,
+  orderBy,
   query,
   runTransaction,
+  startAfter,
 };

@@ -176,7 +176,6 @@ h2 {
 }
 
 .breast-button:focus-visible,
-.clear-button:focus-visible,
 .install-button:focus-visible {
   outline: 3px solid rgba(79, 155, 114, 0.42);
   outline-offset: 3px;
@@ -212,6 +211,44 @@ h2 {
 .breast-button.is-active .button-label {
   background: var(--green);
   box-shadow: 0 10px 22px rgba(77, 155, 114, 0.25);
+}
+
+.last-feed-card {
+  display: flex;
+  margin-top: 20px;
+  padding: 14px 18px;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  background: #fff8f6;
+}
+
+.last-feed-icon {
+  color: var(--rose-dark);
+  font-size: 1.65rem;
+  line-height: 1;
+}
+
+.last-feed-label,
+.last-feed-time {
+  margin: 0;
+}
+
+.last-feed-label {
+  color: var(--muted);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.last-feed-time {
+  margin-top: 3px;
+  color: var(--ink);
+  font-size: 0.95rem;
+  font-weight: 700;
 }
 
 .button-copy {
@@ -322,6 +359,39 @@ h2 {
 .log-list {
   display: grid;
   gap: 10px;
+}
+
+.load-older-button {
+  display: block;
+  margin: 16px auto 0;
+  padding: 10px 18px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  color: var(--rose-dark);
+  background: #fff8f6;
+  font-size: 0.85rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 150ms ease, border-color 150ms ease;
+}
+
+.load-older-button:hover {
+  border-color: var(--rose-soft);
+  background: #fff0ed;
+}
+
+.load-older-button:focus-visible {
+  outline: 3px solid rgba(233, 121, 114, 0.4);
+  outline-offset: 2px;
+}
+
+.load-older-button:disabled {
+  cursor: wait;
+  opacity: 0.65;
+}
+
+.load-older-button[hidden] {
+  display: none;
 }
 
 .log-entry {

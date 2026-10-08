@@ -1,6 +1,7 @@
 import {
   createFeedingSession,
   finishFeedingSession,
+  formatElapsedTimeSince,
   formatTime,
 } from './feed-tracker.js';
 import {
@@ -9,19 +10,31 @@ import {
   db,
   deleteDoc,
   doc,
+  getDocs,
+  limit,
   onSnapshot,
+  orderBy,
   query,
   runTransaction,
+  startAfter,
 } from './firebase.js';
 
+const PAGE_SIZE = 50;
 const buttons = [...document.querySelectorAll('.breast-button')];
 const bathroomButtons = [...document.querySelectorAll('.bathroom-button')];
 const logList = document.querySelector('#log-list');
 const toast = document.querySelector('#toast');
 const installButton = document.querySelector('#install-button');
+const lastFeedTime = document.querySelector('#last-feed-time');
+const loadOlderButton = document.querySelector('#load-older');
 
 const activeSessions = new Map();
-let entries = [];
+let latestEntries = [];
+let olderEntries = [];
+let olderCursor = null;
+let hasMoreEntries = false;
+let hasStartedPaging = false;
+let isLoadingOlder = false;
 let deferredInstallPrompt = null;
 let toastTimer;
 
@@ -36,12 +49,16 @@ function createEntryElement(entry) {
     day: 'numeric',
     hour: '2-digit',
     minute: '2-digit',
+    hourCycle: 'h23',
   }).format(new Date(entry.timestamp));
 
   const message = document.createElement('p');
-  const messageParts = entry.message.split(/(\b(?:left|right)\b|\b\d+\s+minutes?\b)/i);
+  const messageText = entry.type === 'start'
+    ? entry.message.replace(/\s+at \d{1,2}:\d{2}(?=\.)/, '')
+    : entry.message;
+  const messageParts = messageText.split(/(\b(?:left|right)\b|\b\d+\s+minutes?\b|\b\d{1,2}:\d{2}\b)/i);
   messageParts.forEach((part) => {
-    if (/^(?:\b(?:left|right)\b|\b\d+\s+minutes?\b)$/i.test(part)) {
+    if (/^(?:\b(?:left|right)\b|\b\d+\s+minutes?\b|\b\d{1,2}:\d{2}\b)$/i.test(part)) {
       const emphasized = document.createElement('strong');
       emphasized.textContent = part;
       message.append(emphasized);
@@ -66,6 +83,10 @@ function createEntryElement(entry) {
     deleteButton.disabled = true;
     try {
       await deleteDoc(doc(db, 'entries', entry.id));
+      latestEntries = latestEntries.filter((loadedEntry) => loadedEntry.id !== entry.id);
+      olderEntries = olderEntries.filter((loadedEntry) => loadedEntry.id !== entry.id);
+      renderLog();
+      updateLastFeedTime();
     } catch (error) {
       console.error('Could not delete the Firestore log entry.', error);
       showToast('Could not delete the entry. Check your connection and try again.');
@@ -79,16 +100,83 @@ function createEntryElement(entry) {
 
 function renderLog() {
   logList.replaceChildren();
+  const loadedEntries = getLoadedEntries();
 
-  if (entries.length === 0) {
+  if (loadedEntries.length === 0) {
     const empty = document.createElement('div');
     empty.className = 'empty-state';
     empty.innerHTML = '<span class="empty-icon" aria-hidden="true">✦</span><p>Your feeding entries will appear here.</p>';
     logList.append(empty);
+    updateLoadOlderButton();
+    updateLastFeedTime();
     return;
   }
 
-  entries.forEach((entry) => logList.append(createEntryElement(entry)));
+  loadedEntries.forEach((entry) => logList.append(createEntryElement(entry)));
+  updateLoadOlderButton();
+  updateLastFeedTime();
+}
+
+function getLoadedEntries() {
+  return [...new Map(
+    [...latestEntries, ...olderEntries].map((entry) => [entry.id, entry]),
+  ).values()].sort((first, second) => second.timestamp.localeCompare(first.timestamp));
+}
+
+function updateLoadOlderButton() {
+  loadOlderButton.hidden = !hasMoreEntries;
+  loadOlderButton.disabled = isLoadingOlder;
+  loadOlderButton.textContent = isLoadingOlder ? 'Loading…' : 'Load older entries';
+}
+
+async function loadOlderEntries() {
+  if (isLoadingOlder || !hasMoreEntries || !olderCursor) return;
+
+  isLoadingOlder = true;
+  hasStartedPaging = true;
+  updateLoadOlderButton();
+
+  try {
+    const olderQuery = query(
+      collection(db, 'entries'),
+      orderBy('timestamp', 'desc'),
+      startAfter(olderCursor),
+      limit(PAGE_SIZE),
+    );
+    const snapshot = await getDocs(olderQuery);
+    olderEntries = [
+      ...olderEntries,
+      ...snapshot.docs.map((entry) => ({ id: entry.id, ...entry.data() })),
+    ];
+    if (snapshot.docs.length > 0) {
+      olderCursor = snapshot.docs[snapshot.docs.length - 1];
+    }
+    hasMoreEntries = snapshot.docs.length === PAGE_SIZE;
+    renderLog();
+  } catch (error) {
+    console.error('Could not load older Firestore entries.', error);
+    showToast('Could not load older entries. Check your connection and try again.');
+  } finally {
+    isLoadingOlder = false;
+    updateLoadOlderButton();
+  }
+}
+
+function updateLastFeedTime() {
+  if (activeSessions.size > 0) {
+    lastFeedTime.textContent = 'A feed is in progress';
+    return;
+  }
+
+  const lastCompletedFeed = getLoadedEntries().find((entry) => entry.type === 'finish');
+  if (lastCompletedFeed) {
+    lastFeedTime.textContent = formatElapsedTimeSince(new Date(lastCompletedFeed.timestamp));
+    return;
+  }
+
+  lastFeedTime.textContent = hasMoreEntries
+    ? 'Load older entries to find the last feed'
+    : 'No completed feeds yet';
 }
 
 function showToast(message) {
@@ -142,7 +230,7 @@ async function handleBreastClick(event) {
       }
 
       const session = createFeedingSession(breast, now);
-      const message = `Feeding started on the ${breast === 'L' ? 'left' : 'right'} breast at ${formatTime(now)}.`;
+      const message = `Feeding started on the ${breast === 'L' ? 'left' : 'right'} breast.`;
 
       transaction.set(sessionRef, { startedAt: session.startedAt.toISOString() });
       transaction.set(doc(collection(db, 'entries')), {
@@ -182,6 +270,7 @@ async function handleBathroomClick(event) {
 
 buttons.forEach((button) => button.addEventListener('click', handleBreastClick));
 bathroomButtons.forEach((button) => button.addEventListener('click', handleBathroomClick));
+loadOlderButton.addEventListener('click', loadOlderEntries);
 
 window.addEventListener('beforeinstallprompt', (event) => {
   event.preventDefault();
@@ -214,11 +303,21 @@ if ('serviceWorker' in navigator) {
 }
 
 onSnapshot(
-  query(collection(db, 'entries')),
+  query(collection(db, 'entries'), orderBy('timestamp', 'desc'), limit(PAGE_SIZE)),
   (snapshot) => {
-    entries = snapshot.docs
-      .map((entry) => ({ id: entry.id, ...entry.data() }))
-      .sort((first, second) => second.timestamp.localeCompare(first.timestamp));
+    const previousLatestEntries = latestEntries;
+    latestEntries = snapshot.docs.map((entry) => ({ id: entry.id, ...entry.data() }));
+    if (snapshot.docs.length > 0 && !hasStartedPaging) {
+      olderCursor = snapshot.docs[snapshot.docs.length - 1];
+    }
+    if (hasStartedPaging) {
+      const latestIds = new Set(latestEntries.map((entry) => entry.id));
+      const olderIds = new Set(olderEntries.map((entry) => entry.id));
+      olderEntries.push(...previousLatestEntries.filter((entry) =>
+        !latestIds.has(entry.id) && !olderIds.has(entry.id),
+      ));
+    }
+    hasMoreEntries = snapshot.docs.length === PAGE_SIZE || olderEntries.length > 0;
     renderLog();
   },
   (error) => {
@@ -241,6 +340,7 @@ onSnapshot(
     buttons.forEach((button) => {
       updateButton(button, activeSessions.get(button.dataset.breast));
     });
+    updateLastFeedTime();
   },
   (error) => {
     console.error('Could not load active feeding sessions from Firestore.', error);
@@ -248,4 +348,5 @@ onSnapshot(
   },
 );
 
+window.setInterval(updateLastFeedTime, 60_000);
 renderLog();

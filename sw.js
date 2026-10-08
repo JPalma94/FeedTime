@@ -1,4 +1,4 @@
-const CACHE_NAME = 'feedtime-v3';
+const CACHE_NAME = 'feedtime-v6';
 const APP_SHELL = [
   './',
   './index.html',

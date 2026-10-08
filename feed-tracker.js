@@ -20,6 +20,23 @@ export function getDurationMinutes(startedAt, endedAt) {
   return Math.max(0, Math.round((endedAt.getTime() - startedAt.getTime()) / 60000));
 }
 
+export function formatElapsedTimeSince(startedAt, now = new Date()) {
+  const elapsedMinutes = Math.max(
+    0,
+    Math.floor((new Date(now).getTime() - new Date(startedAt).getTime()) / 60000),
+  );
+  if (elapsedMinutes === 0) return 'Just now';
+
+  const hours = Math.floor(elapsedMinutes / 60);
+  const minutes = elapsedMinutes % 60;
+  const parts = [];
+
+  if (hours > 0) parts.push(`${hours} ${hours === 1 ? 'hour' : 'hours'}`);
+  if (minutes > 0) parts.push(`${minutes} ${minutes === 1 ? 'minute' : 'minutes'}`);
+
+  return `${parts.join(' and ')} ago`;
+}
+
 export function finishFeedingSession(session, endedAt = new Date()) {
   if (!session || session.status !== 'active') {
     throw new Error('No active feeding session to finish.');

@@ -4,12 +4,32 @@ import assert from 'node:assert/strict';
 import {
   createFeedingSession,
   finishFeedingSession,
+  formatElapsedTimeSince,
   formatTime,
   getDurationMinutes,
 } from '../feed-tracker.js';
 
 test('formatTime renders a 24-hour time', () => {
   assert.equal(formatTime(new Date('2026-10-08T08:05:00')), '08:05');
+});
+
+test('formatElapsedTimeSince formats hours and minutes with correct singulars', () => {
+  assert.equal(
+    formatElapsedTimeSince(new Date('2026-10-08T08:05:00Z'), new Date('2026-10-08T09:06:00Z')),
+    '1 hour and 1 minute ago',
+  );
+  assert.equal(
+    formatElapsedTimeSince(new Date('2026-10-08T08:05:00Z'), new Date('2026-10-08T10:05:00Z')),
+    '2 hours ago',
+  );
+  assert.equal(
+    formatElapsedTimeSince(new Date('2026-10-08T08:05:00Z'), new Date('2026-10-08T08:17:00Z')),
+    '12 minutes ago',
+  );
+  assert.equal(
+    formatElapsedTimeSince(new Date('2026-10-08T08:05:00Z'), new Date('2026-10-08T08:05:30Z')),
+    'Just now',
+  );
 });
 
 test('starting a breast session records the start time', () => {

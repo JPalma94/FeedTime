@@ -1,0 +1,470 @@
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Fraunces:opsz,wght@9..144,600&display=swap');
+
+:root {
+  color-scheme: light;
+  --ink: #3f302f;
+  --muted: #806e6b;
+  --cream: #fff8f4;
+  --card: #fffdfb;
+  --rose: #e97972;
+  --rose-dark: #cf5f59;
+  --rose-soft: #f9c9c4;
+  --green: #4d9b72;
+  --green-dark: #2f7657;
+  --green-soft: #d9eee2;
+  --line: #f0ded9;
+  --shadow: 0 18px 45px rgba(93, 54, 49, 0.09);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  min-width: 320px;
+  min-height: 100vh;
+  margin: 0;
+  color: var(--ink);
+  background:
+    radial-gradient(circle at 10% 0%, rgba(249, 201, 196, 0.52), transparent 30%),
+    radial-gradient(circle at 90% 20%, rgba(217, 238, 226, 0.65), transparent 28%),
+    var(--cream);
+  font-family: 'DM Sans', system-ui, sans-serif;
+}
+
+button {
+  font: inherit;
+}
+
+.app-shell {
+  width: min(100% - 32px, 760px);
+  margin: 0 auto;
+  padding: 38px 0 72px;
+}
+
+.topbar {
+  display: flex;
+  align-items: center;
+  gap: 13px;
+  margin-bottom: 24px;
+}
+
+.brand-mark {
+  display: grid;
+  width: 48px;
+  height: 48px;
+  place-items: center;
+  border-radius: 16px;
+  color: white;
+  background: var(--rose);
+  box-shadow: 0 9px 20px rgba(233, 121, 114, 0.25);
+}
+
+.brand-mark svg {
+  width: 39px;
+  height: 39px;
+}
+
+h1,
+h2,
+p {
+  margin-top: 0;
+}
+
+h1 {
+  margin-bottom: 0;
+  font-family: 'Fraunces', Georgia, serif;
+  font-size: 1.55rem;
+}
+
+h2 {
+  margin-bottom: 8px;
+  font-family: 'Fraunces', Georgia, serif;
+  font-size: clamp(1.65rem, 5vw, 2.25rem);
+  line-height: 1.12;
+}
+
+.eyebrow {
+  margin-bottom: 4px;
+  color: var(--rose-dark);
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.install-button,
+.clear-button {
+  border: 0;
+  border-radius: 999px;
+  cursor: pointer;
+  font-weight: 700;
+}
+
+.install-button {
+  margin-left: auto;
+  padding: 10px 16px;
+  color: white;
+  background: var(--ink);
+}
+
+.tracker-card,
+.log-card {
+  border: 1px solid rgba(240, 222, 217, 0.88);
+  border-radius: 28px;
+  background: rgba(255, 253, 251, 0.9);
+  box-shadow: var(--shadow);
+  backdrop-filter: blur(12px);
+}
+
+.tracker-card {
+  padding: clamp(24px, 6vw, 42px);
+}
+
+.intro {
+  text-align: center;
+}
+
+.intro > p:last-child {
+  margin-bottom: 28px;
+  color: var(--muted);
+}
+
+.breast-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+}
+
+.breast-button {
+  position: relative;
+  display: flex;
+  min-height: 230px;
+  padding: 22px 18px;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  border: 2px solid var(--line);
+  border-radius: 24px;
+  color: var(--ink);
+  background: #fff;
+  cursor: pointer;
+  transition: transform 160ms ease, border-color 160ms ease, background 160ms ease, box-shadow 160ms ease;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.breast-button::before {
+  position: absolute;
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  background: var(--rose-soft);
+  content: '';
+  opacity: 0.45;
+  transform: translateY(-50px);
+}
+
+.breast-button:hover {
+  transform: translateY(-3px);
+  border-color: var(--rose-soft);
+  box-shadow: 0 14px 28px rgba(93, 54, 49, 0.09);
+}
+
+.breast-button:active {
+  transform: scale(0.98);
+}
+
+.breast-button:focus-visible,
+.clear-button:focus-visible,
+.install-button:focus-visible {
+  outline: 3px solid rgba(79, 155, 114, 0.42);
+  outline-offset: 3px;
+}
+
+.breast-button.is-active {
+  border-color: var(--green);
+  color: var(--green-dark);
+  background: var(--green-soft);
+  box-shadow: inset 0 0 0 1px var(--green), 0 14px 30px rgba(77, 155, 114, 0.16);
+}
+
+.breast-button.is-active::before {
+  background: rgba(255, 255, 255, 0.65);
+}
+
+.button-label {
+  position: relative;
+  display: grid;
+  width: 74px;
+  height: 74px;
+  margin-bottom: 20px;
+  place-items: center;
+  border-radius: 50%;
+  color: white;
+  background: var(--rose);
+  box-shadow: 0 10px 22px rgba(233, 121, 114, 0.23);
+  font-family: 'Fraunces', Georgia, serif;
+  font-size: 2rem;
+  font-weight: 600;
+}
+
+.breast-button.is-active .button-label {
+  background: var(--green);
+  box-shadow: 0 10px 22px rgba(77, 155, 114, 0.25);
+}
+
+.button-copy {
+  position: relative;
+  font-size: 1rem;
+  font-weight: 700;
+}
+
+.button-status {
+  position: relative;
+  margin-top: 5px;
+  color: var(--muted);
+  font-size: 0.8rem;
+}
+
+.hint {
+  display: flex;
+  margin-top: 24px;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  color: var(--muted);
+  font-size: 0.8rem;
+}
+
+.hint-dot {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: var(--green);
+  box-shadow: 0 0 0 4px var(--green-soft);
+}
+
+.bathroom-actions {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  margin-top: 20px;
+}
+
+.bathroom-button {
+  display: flex;
+  min-height: 54px;
+  padding: 10px 16px;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  color: var(--ink);
+  background: #fff;
+  cursor: pointer;
+  font-weight: 700;
+  transition: transform 150ms ease, border-color 150ms ease, background 150ms ease;
+}
+
+.bathroom-button:hover {
+  border-color: var(--rose-soft);
+  background: #fff8f6;
+  transform: translateY(-2px);
+}
+
+.bathroom-button:active {
+  transform: scale(0.98);
+}
+
+.bathroom-button:focus-visible {
+  outline: 3px solid rgba(79, 155, 114, 0.42);
+  outline-offset: 3px;
+}
+
+.bathroom-icon {
+  width: 23px;
+  height: 23px;
+  flex: 0 0 auto;
+}
+
+.pee-icon {
+  fill: #e8b83f;
+  filter: drop-shadow(0 2px 2px rgba(111, 78, 18, 0.18));
+}
+
+.pee-highlight {
+  fill: none;
+  stroke: rgba(255, 255, 255, 0.72);
+  stroke-linecap: round;
+  stroke-width: 2;
+}
+
+.log-card {
+  margin-top: 20px;
+  padding: clamp(24px, 5vw, 34px);
+}
+
+.section-heading {
+  display: flex;
+  margin-bottom: 20px;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+}
+
+.section-heading h2 {
+  margin-bottom: 0;
+  font-size: 1.65rem;
+}
+
+.clear-button {
+  padding: 9px 14px;
+  color: var(--muted);
+  background: #f7f0ed;
+  font-size: 0.8rem;
+}
+
+.clear-button[hidden] {
+  display: none;
+}
+
+.log-list {
+  display: grid;
+  gap: 10px;
+}
+
+.log-entry {
+  display: grid;
+  padding: 15px 17px;
+  border: 1px solid var(--line);
+  border-radius: 17px;
+  background: #fff;
+  animation: entry-in 250ms ease both;
+}
+
+.log-entry.finish {
+  border-left: 4px solid var(--rose);
+}
+
+.log-entry.start {
+  border-left: 4px solid var(--green);
+}
+
+.log-details {
+  display: grid;
+  gap: 5px;
+}
+
+.log-details time {
+  color: var(--muted);
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.log-details p {
+  margin-bottom: 0;
+  line-height: 1.45;
+}
+
+.log-details strong {
+  color: var(--ink);
+  font-weight: 800;
+}
+
+.empty-state {
+  display: grid;
+  min-height: 140px;
+  padding: 25px;
+  place-items: center;
+  border: 1px dashed var(--line);
+  border-radius: 18px;
+  color: var(--muted);
+  text-align: center;
+}
+
+.empty-state p {
+  margin: 0;
+}
+
+.empty-icon {
+  color: var(--rose);
+  font-size: 1.5rem;
+}
+
+.toast {
+  position: fixed;
+  z-index: 10;
+  right: 20px;
+  bottom: max(20px, env(safe-area-inset-bottom));
+  left: 20px;
+  max-width: 560px;
+  margin: auto;
+  padding: 15px 20px;
+  border-radius: 15px;
+  color: white;
+  background: var(--ink);
+  box-shadow: 0 14px 35px rgba(63, 48, 47, 0.25);
+  font-weight: 600;
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(16px);
+  transition: opacity 180ms ease, transform 180ms ease;
+}
+
+.toast.show {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+@keyframes entry-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+}
+
+@media (max-width: 520px) {
+  .app-shell {
+    width: min(100% - 20px, 760px);
+    padding-top: 20px;
+  }
+
+  .tracker-card,
+  .log-card {
+    border-radius: 22px;
+  }
+
+  .breast-grid {
+    gap: 10px;
+  }
+
+  .breast-button {
+    min-height: 205px;
+    padding: 15px 8px;
+    border-radius: 20px;
+  }
+
+  .button-label {
+    width: 62px;
+    height: 62px;
+    margin-bottom: 16px;
+    font-size: 1.7rem;
+  }
+
+  .button-copy {
+    font-size: 0.86rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+  }
+}

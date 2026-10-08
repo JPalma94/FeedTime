@@ -1,0 +1,18 @@
+{
+  "name": "FeedTime Baby Feeding Tracker",
+  "short_name": "FeedTime",
+  "description": "A simple tracker for baby feeding times.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#fff8f4",
+  "theme_color": "#fff8f4",
+  "icons": [
+    {
+      "src": "assets/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

@@ -7,19 +7,17 @@ import {
   addDoc,
   collection,
   db,
+  deleteDoc,
   doc,
-  getDocs,
   onSnapshot,
   query,
   runTransaction,
-  writeBatch,
 } from './firebase.js';
 
 const buttons = [...document.querySelectorAll('.breast-button')];
 const bathroomButtons = [...document.querySelectorAll('.bathroom-button')];
 const logList = document.querySelector('#log-list');
 const toast = document.querySelector('#toast');
-const clearButton = document.querySelector('#clear-log');
 const installButton = document.querySelector('#install-button');
 
 const activeSessions = new Map();
@@ -55,7 +53,27 @@ function createEntryElement(entry) {
   const details = document.createElement('div');
   details.className = 'log-details';
   details.append(time, message);
-  item.append(details);
+
+  const deleteButton = document.createElement('button');
+  deleteButton.className = 'delete-entry';
+  deleteButton.type = 'button';
+  deleteButton.setAttribute('aria-label', 'Delete log entry');
+  deleteButton.title = 'Delete log entry';
+  deleteButton.textContent = '×';
+  deleteButton.addEventListener('click', async () => {
+    if (!window.confirm('Delete this log entry? This cannot be undone.')) return;
+
+    deleteButton.disabled = true;
+    try {
+      await deleteDoc(doc(db, 'entries', entry.id));
+    } catch (error) {
+      console.error('Could not delete the Firestore log entry.', error);
+      showToast('Could not delete the entry. Check your connection and try again.');
+      deleteButton.disabled = false;
+    }
+  });
+
+  item.append(details, deleteButton);
   return item;
 }
 
@@ -67,11 +85,9 @@ function renderLog() {
     empty.className = 'empty-state';
     empty.innerHTML = '<span class="empty-icon" aria-hidden="true">✦</span><p>Your feeding entries will appear here.</p>';
     logList.append(empty);
-    clearButton.hidden = true;
     return;
   }
 
-  clearButton.hidden = false;
   entries.forEach((entry) => logList.append(createEntryElement(entry)));
 }
 
@@ -166,24 +182,6 @@ async function handleBathroomClick(event) {
 
 buttons.forEach((button) => button.addEventListener('click', handleBreastClick));
 bathroomButtons.forEach((button) => button.addEventListener('click', handleBathroomClick));
-
-clearButton.addEventListener('click', async () => {
-  clearButton.disabled = true;
-  try {
-    const snapshot = await getDocs(query(collection(db, 'entries')));
-    for (let offset = 0; offset < snapshot.docs.length; offset += 500) {
-      const batch = writeBatch(db);
-      snapshot.docs.slice(offset, offset + 500).forEach((entry) => batch.delete(entry.ref));
-      await batch.commit();
-    }
-    showToast('All log entries cleared.');
-  } catch (error) {
-    console.error('Could not clear the Firestore log.', error);
-    showToast('Could not clear the log. Check your connection and Firestore setup.');
-  } finally {
-    clearButton.disabled = false;
-  }
-});
 
 window.addEventListener('beforeinstallprompt', (event) => {
   event.preventDefault();

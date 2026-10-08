@@ -3,14 +3,13 @@ import {
   addDoc,
   collection,
   doc,
-  getDocs,
+  deleteDoc,
   initializeFirestore,
   onSnapshot,
   persistentLocalCache,
   persistentMultipleTabManager,
   query,
   runTransaction,
-  writeBatch,
 } from 'https://www.gstatic.com/firebasejs/12.13.0/firebase-firestore.js';
 
 const firebaseConfig = {
@@ -33,10 +32,9 @@ export {
   addDoc,
   collection,
   db,
+  deleteDoc,
   doc,
-  getDocs,
   onSnapshot,
   query,
   runTransaction,
-  writeBatch,
 };

@@ -39,9 +39,9 @@ function createEntryElement(entry) {
   }).format(new Date(entry.timestamp));
 
   const message = document.createElement('p');
-  const messageParts = entry.message.split(/(\b(?:left|right)\b)/i);
+  const messageParts = entry.message.split(/(\b(?:left|right)\b|\b\d+\s+minutes?\b)/i);
   messageParts.forEach((part) => {
-    if (/^\b(?:left|right)\b$/i.test(part)) {
+    if (/^(?:\b(?:left|right)\b|\b\d+\s+minutes?\b)$/i.test(part)) {
       const emphasized = document.createElement('strong');
       emphasized.textContent = part;
       message.append(emphasized);
